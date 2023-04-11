@@ -27,11 +27,19 @@ func NewPingService(logger log.Logger) Service {
 //	}
 func (ping *ping) SayHello(ctx context.Context, name string) (string, string, error) {
 	tr := otel.Tracer("SayHello")
-	_, span := tr.Start(ctx, "bar")
+	ctx, span := tr.Start(ctx, "SayingHello")
 	span.SetAttributes(attribute.Key("name").String(name))
 	defer span.End()
 	logger := log.With(ping.logger, "method", "SayHello")
 	logger.Log("from", name)
-	uuid, _ := uuid.NewV4()
+	uuid := generateUniqueUUID(ctx)
 	return uuid.String(), fmt.Sprintf("hello, %s", name), nil
+}
+
+func generateUniqueUUID(ctx context.Context) uuid.UUID {
+	tr := otel.Tracer("SayHello")
+	_, span := tr.Start(ctx, "UUID")
+	defer span.End()
+	uuid, _ := uuid.NewV4()
+	return uuid
 }
