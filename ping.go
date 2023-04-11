@@ -27,7 +27,7 @@ func NewPingService(logger log.Logger) Service {
 //	}
 func (ping *ping) SayHello(ctx context.Context, name string) (string, string, error) {
 	tr := otel.Tracer("SayHello")
-	_, span := tr.Start(ctx, "bar")
+	_, span := tr.Start(ctx, "SayingHello")
 	span.SetAttributes(attribute.Key("name").String(name))
 	defer span.End()
 	logger := log.With(ping.logger, "method", "SayHello")
